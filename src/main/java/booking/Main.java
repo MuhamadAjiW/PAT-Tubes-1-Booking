@@ -1,4 +1,4 @@
-package pat;
+package booking;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

@@ -1,4 +1,4 @@
-package booking.booking;
+package booking.test;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
