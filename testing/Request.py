@@ -1,5 +1,4 @@
 import requests
-
 basehost = "localhost"
 baseport = "3000"
 baseurl = "http://" + basehost + ":" + baseport
