@@ -1,12 +1,15 @@
 import { Router } from "express";
 import { WebhookController } from "../controllers/webhook-controller";
 import { Route } from "./route";
+import { App } from "../app";
 
 export class WebhookRoute implements Route{
     webhookController: WebhookController;
+    app: App;
 
-    constructor() {
+    constructor(app: App) {
         this.webhookController = new WebhookController();
+        this.app = app;
     }
 
     getRoutes(): Router{
@@ -14,6 +17,6 @@ export class WebhookRoute implements Route{
             .post("/webhook/test",
                 this.webhookController.testWebhook())
             .post("/webhook",
-                this.webhookController.register())
+                this.webhookController.register(this.app))
     }
 }

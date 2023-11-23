@@ -1,14 +1,14 @@
 import requests
 
 basehost = "localhost"
-baseport = "8180"
+baseport = "3000"
 baseurl = "http://" + basehost + ":" + baseport
 
 rabbitmqHost = "localhost"
 rabbitmqPort = 8200
 
-def test_webhook():
-    url = baseurl + "/webhook/test"
+def test_webhook(endpoint):
+    url = baseurl + endpoint
 
     # data = {
     #     "email": email,
@@ -47,8 +47,9 @@ def book(acaraId, kursiId, userId):
     return response
 
 if __name__ == "__main__":
-    response = test_webhook()
-    response = book(1, 1, 1)
+    response = test_webhook("/custom")
+    # response = register("piss", "/custom")
+    # response = book(1, 1, 1)
 
     print("\nstatus code:", response.status_code)
     print("Response content:")

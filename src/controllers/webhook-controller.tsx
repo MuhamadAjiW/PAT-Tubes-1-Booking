@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { WebhookRegisterRequest } from '../types/WebhookRegisterRequest';
 import { badRequestErrorHandler, conflictErrorHandler, generalErrorHandler, notFoundErrorHandler, unauthorizedErrorHandler } from '../middlewares/error-middleware';
 import { BadRequestError } from '../types/errors/BadRequestError';
+import { App } from '../app';
 
 export class WebhookController{
     testWebhook(){
@@ -18,7 +19,7 @@ export class WebhookController{
         }
     }
 
-    register(){
+    register(app: App){
         return async (req: Request, res: Response) => {
             let webhookRegisterRequest: WebhookRegisterRequest
             try {
@@ -28,6 +29,10 @@ export class WebhookController{
             }
     
             // TODO: Implement
+            app.server.post(webhookRegisterRequest.endpoint,
+                async (req: Request, res: Response) => {
+                    console.log("Custom webhook triggered!");
+            });
     
             res.status(StatusCodes.OK).json({
                 message: "Webhook addition successful",

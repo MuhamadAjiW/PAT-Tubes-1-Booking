@@ -11,7 +11,7 @@ export class App{
     server: Express;
 
     constructor(){
-        const webhookRoute = new WebhookRoute();
+        const webhookRoute = new WebhookRoute(this);
         const bookingRoute = new BookingRoute();
 
         this.server = express();
