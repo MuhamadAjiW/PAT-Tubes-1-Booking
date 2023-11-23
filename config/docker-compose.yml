@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  client-app:
+  app:
     container_name: client-app
     build: 
       context: ./tugas-besar-pat-client
@@ -13,7 +13,7 @@ services:
     networks:
       - dockerNet
 
-  client-app-db:
+  db:
     container_name: client-app-db
     image: postgres:15.0-alpine
     volumes:
@@ -43,7 +43,7 @@ services:
       - booking-queue
       - booking-db
 
-  booking-queue:
+  queue:
     container_name: booking-queue
     image: rabbitmq:3.13.0-rc.2-management
     ports:
