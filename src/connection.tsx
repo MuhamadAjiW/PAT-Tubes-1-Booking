@@ -4,7 +4,7 @@ import { Pool } from 'pg';
 
 const pool = new Pool({
   user: 'postgres',
-  host: 'localhost',
+  host: 'booking-db',
   database: 'booking',
   password: 'postgres',
   port: 5432, 
