@@ -1,22 +1,17 @@
 {
   "name": "booking",
   "module": "index.ts",
-  "type": "module",
-  "devDependencies": {
-    "bun-types": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
   "dependencies": {
     "@prisma/client": "4.5.0",
-    "@stricjs/router": "^5.0.6",
-    "@stricjs/utils": "^1.6.1",
     "amqplib": "^0.10.3",
     "dotenv": "^16.3.1",
     "express-async-errors": "^3.1.1",
+    "http-status-codes": "^2.3.0",
     "prisma": "4.5.0",
-    "typescript": "^5.3.2",
     "zod": "^3.22.4"
-  }
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "type": "module"
 }
