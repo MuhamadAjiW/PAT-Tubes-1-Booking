@@ -33,9 +33,11 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Aa123456
-      POSTGRES_DB: wbd_db_rest
+      POSTGRES_DB: bookingdb
     networks:
       - dockerNet
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
 networks:
   dockerNet:
     external:

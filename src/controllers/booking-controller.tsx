@@ -3,36 +3,32 @@ import { StatusCodes } from 'http-status-codes';
 import { WebhookRegisterRequest } from '../types/WebhookRegisterRequest';
 import { badRequestErrorHandler, conflictErrorHandler, generalErrorHandler, notFoundErrorHandler, unauthorizedErrorHandler } from '../middlewares/error-middleware';
 import { BadRequestError } from '../types/errors/BadRequestError';
+import { BookRequest } from '../types/BookRequest';
+import { BookingRepository } from '../repository/booking-repository';
 
-export class WebhookController{
-    testWebhook(){
-        return async (req: Request, res: Response) => {            
-            console.log("Test webhook triggered");
-    
-            res.status(StatusCodes.OK).json({
-                message: "Webhook test successful",
-                valid: true,
-                data: null
-            });
-            return;
-        }
+export class BookingController{
+    bookingRepository: BookingRepository;
+
+    constructor(){
+        this.bookingRepository = new BookingRepository();
     }
 
-    register(){
-        return async (req: Request, res: Response) => {
-            let webhookRegisterRequest: WebhookRegisterRequest
+    book(){
+        return async (req: Request, res: Response) => {   
+            let kursiBookRequest: BookRequest
             try {
-                webhookRegisterRequest = req.body;
+                kursiBookRequest = req.body;
             } catch (error) {
                 throw new BadRequestError("Bad request parameters");
             }
     
-            // TODO: Implement
+            // TODO: Implement properly
+            const data = await this.bookingRepository.insert(kursiBookRequest);
     
             res.status(StatusCodes.OK).json({
-                message: "Webhook addition successful",
+                message: "Booking successful",
                 valid: true,
-                data: null
+                data: data
             });
             return;
         }

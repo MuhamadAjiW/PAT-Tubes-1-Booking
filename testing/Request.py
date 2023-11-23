@@ -28,9 +28,22 @@ def register(eventName, endpoint):
     response = requests.post(url, json=data, headers=headers)
     return response
 
+def book(acaraId, kursiId, userId):
+    url = "http://localhost:3000/api/book"
+
+    data = {
+        "acaraId": acaraId,
+        "kursiId": kursiId,
+        "userId": userId,
+    }
+    headers = {'Content-Type': 'application/json'}
+
+    response = requests.post(url, json=data, headers=headers)
+    return response
+
 if __name__ == "__main__":
     # response = test_webhook()
-    response = register("NewWebhook", "/test")
+    response = book(1, 1, 1)
 
     print("\nstatus code:", response.status_code)
     print("Response content:")
