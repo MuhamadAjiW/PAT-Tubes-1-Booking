@@ -9,9 +9,14 @@ export class BookingRoute implements Route{
         this.BookingController = new BookingController();
     }
 
-    getRoutes(): Router{
+    getRoutes(): Router {
         return Router()
-            .post("/api/book",
-                this.BookingController.book())
+            .post("/api/book", async (req, res, next) => {
+                try {
+                    await this.BookingController.book(req, res);
+                } catch (err) {
+                    next(err);
+                }
+            });
     }
 }

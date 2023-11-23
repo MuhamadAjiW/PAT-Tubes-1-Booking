@@ -1,14 +1,9 @@
 import requests
-
-basehost = "localhost"
-baseport = "8180"
-baseurl = "http://" + basehost + ":" + baseport
-
-rabbitmqHost = "localhost"
-rabbitmqPort = 8200
+import datetime
+import random
 
 def test_webhook():
-    url = baseurl + "/webhook/test"
+    url = "http://localhost:3000/webhook/test"
 
     # data = {
     #     "email": email,
@@ -22,7 +17,7 @@ def test_webhook():
     return response
 
 def register(eventName, endpoint):
-    url = baseurl + "/webhook"
+    url = "http://localhost:3000/webhook"
 
     data = {
         "eventName": eventName,
@@ -34,7 +29,7 @@ def register(eventName, endpoint):
     return response
 
 def book(acaraId, kursiId, userId):
-    url = baseurl + "/api/book"
+    url = "http://localhost:3000/api/book"
 
     data = {
         "acaraId": acaraId,
@@ -47,7 +42,7 @@ def book(acaraId, kursiId, userId):
     return response
 
 if __name__ == "__main__":
-    response = test_webhook()
+    # response = test_webhook()
     response = book(1, 1, 1)
 
     print("\nstatus code:", response.status_code)

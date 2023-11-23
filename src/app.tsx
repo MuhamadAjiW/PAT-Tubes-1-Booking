@@ -1,8 +1,11 @@
 import { Express, Request, Response } from "express";
 import express from 'express';
+import cors from 'cors';
 import { SERVER_PORT } from "./utils/config";
 import { WebhookRoute } from "./routes/webhook-route";
 import { BookingRoute } from "./routes/booking-route";
+import { AcaraRoute } from "./routes/acara-route";
+import { KursiRoute } from "./routes/kursi-route";
 import { badRequestErrorHandler, conflictErrorHandler, generalErrorHandler, notFoundErrorHandler, unauthorizedErrorHandler } from './middlewares/error-middleware';
 
 require("express-async-errors")
@@ -13,6 +16,8 @@ export class App{
     constructor(){
         const webhookRoute = new WebhookRoute();
         const bookingRoute = new BookingRoute();
+        const acaraRoute = new AcaraRoute();
+        const kursiRoute = new KursiRoute();
 
         this.server = express();
         this.server.get('/', (req: Request, res: Response) => {
@@ -20,10 +25,13 @@ export class App{
         });
 
         this.server.use(
+            cors(),
             express.json(),
             express.urlencoded({ extended: true }),
             webhookRoute.getRoutes(),
             bookingRoute.getRoutes(),
+            acaraRoute.getRoutes(),
+            kursiRoute.getRoutes(),
             notFoundErrorHandler,
             conflictErrorHandler,
             badRequestErrorHandler,
