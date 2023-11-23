@@ -11,12 +11,7 @@ export class BookingRoute implements Route{
 
     getRoutes(): Router {
         return Router()
-            .post("/api/book", async (req, res, next) => {
-                try {
-                    await this.BookingController.book(req, res);
-                } catch (err) {
-                    next(err);
-                }
-            });
+            .post("/api/book",
+                this.BookingController.book())
     }
 }

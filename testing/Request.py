@@ -1,6 +1,6 @@
 import requests
 basehost = "localhost"
-baseport = "3000"
+baseport = "3100"
 baseurl = "http://" + basehost + ":" + baseport
 
 rabbitmqHost = "localhost"
@@ -45,8 +45,15 @@ def book(acaraId, kursiId, userId):
     response = requests.post(url, json=data, headers=headers)
     return response
 
+def get():
+    url = baseurl + "/api/kursi"
+
+    response = requests.get(url)
+    return response
+
 if __name__ == "__main__":
-    response = test_webhook("/custom")
+    response = get()
+    # response = test_webhook("/custom")
     # response = register("piss", "/custom")
     # response = book(1, 1, 1)
 

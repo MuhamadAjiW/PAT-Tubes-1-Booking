@@ -29,7 +29,7 @@ services:
   db:
     image: postgres:latest
     ports:
-      - 8183:5432
+      - 8181:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Aa123456
