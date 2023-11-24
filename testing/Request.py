@@ -20,16 +20,25 @@ def test_webhook(endpoint):
     response = requests.post(url)
     return response
 
-def register(eventName, endpoint):
+def register():
+    url = baseurl + "/webhook/clients"
+
+    response = requests.post(url)
+    return response
+
+def registerEndpoint(eventName, endpoint):
     url = baseurl + "/webhook"
 
     data = {
         "eventName": eventName,
         "endpoint": endpoint,
     }
-    headers = {'Content-Type': 'application/json'}
+    headers = {
+        'Content-Type': 'application/json',
+        'API-Key': '776fd992-96d0-438c-9b71-47f77dacf33a'
+        }
 
-    response = requests.post(url, json=data, headers=headers)
+    response = requests.post(url, headers=headers, json=data)
     return response
 
 def book(acaraId, kursiId, userId):
@@ -52,9 +61,9 @@ def get():
     return response
 
 if __name__ == "__main__":
-    response = get()
-    # response = test_webhook("/custom")
-    # response = register("piss", "/custom")
+    # response = register()
+    # response = registerEndpoint("test", "/euy")
+    response = test_webhook("/webhook/euy")
     # response = book(1, 1, 1)
 
     print("\nstatus code:", response.status_code)

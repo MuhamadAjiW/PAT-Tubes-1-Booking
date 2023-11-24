@@ -3,12 +3,14 @@
   "module": "index.ts",
   "dependencies": {
     "amqplib": "^0.10.3",
+    "axios": "^1.6.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express-async-errors": "^3.1.1",
     "http-status-codes": "^2.3.0",
     "pg": "^8.11.3",
     "pg-native": "^3.0.1",
+    "request-ip": "^3.3.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

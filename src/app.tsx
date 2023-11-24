@@ -1,6 +1,7 @@
 import { Express, Request, Response } from "express";
 import express from 'express';
 import cors from 'cors';
+import requestIp from 'request-ip'
 import { SERVER_PORT } from "./utils/config";
 import { WebhookRoute } from "./routes/webhook-route";
 import { BookingRoute } from "./routes/booking-route";
@@ -25,6 +26,7 @@ export class App{
         });
 
         this.server.use(
+            requestIp.mw(),
             cors(),
             express.json(),
             express.urlencoded({ extended: true }),

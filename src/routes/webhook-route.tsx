@@ -16,7 +16,9 @@ export class WebhookRoute implements Route{
         return Router()
             .post("/webhook/test",
                 this.webhookController.testWebhook())
+            .post("/webhook/clients",
+                this.webhookController.registerClient())
             .post("/webhook",
-                this.webhookController.register(this.app))
+                this.webhookController.registerWebhook(this.app))
     }
 }
