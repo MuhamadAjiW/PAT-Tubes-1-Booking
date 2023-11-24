@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Route } from "./route";
+import { Route } from "../types/interfaces/route";
 import { BookingController } from "../controllers/booking-controller";
 
 export class BookingRoute implements Route{

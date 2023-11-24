@@ -19,7 +19,6 @@ export class WebhookController{
         this.webhookRepository.cleanWebhook()
     }
 
-
     testWebhook(){
         return async (req: Request, res: Response) => {            
             console.log("Test webhook triggered");

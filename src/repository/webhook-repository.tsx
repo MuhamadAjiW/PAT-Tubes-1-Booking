@@ -1,11 +1,11 @@
 import { BookRequest } from '../types/BookRequest';
 import { WebhookRegisterRequest } from '../types/WebhookRegisterRequest';
-import { pool } from '../utils/connection';
+import { PostgresConnection } from '../utils/connection';
 
 export class WebhookRepository{
     //TODO: Implement
     async insertWebhookClient(ip: String, token: String){
-        const result = await pool.query(
+        const result = await PostgresConnection.query(
             'INSERT INTO webhook_client (ip, token) VALUES ($1, $2) RETURNING client_id, ip, token',
             [ip, token]
         )
@@ -14,7 +14,7 @@ export class WebhookRepository{
     }
     
     async insertWebhook(webhookRegisterRequest: WebhookRegisterRequest, client_id: number){
-        const result = await pool.query(
+        const result = await PostgresConnection.query(
             'INSERT INTO webhook (client_id, endpoint, event_name) VALUES ($1, $2, $3) RETURNING webhook_id, client_id, endpoint, event_name',
             [client_id, webhookRegisterRequest.endpoint, webhookRegisterRequest.eventName]
         )
@@ -23,14 +23,14 @@ export class WebhookRepository{
     }
 
     async cleanWebhook(){
-        const result = await pool.query(
+        const result = await PostgresConnection.query(
             'DELETE FROM webhook WHERE true',
         )
         return
     }
 
     async getWebhookById(webhook_id: number){
-        const result = await pool.query(
+        const result = await PostgresConnection.query(
             'SELECT * FROM webhook WHERE webhook_id = $1',
             [webhook_id]
         )
@@ -38,14 +38,14 @@ export class WebhookRepository{
     }
 
     async getWebhookUniqueEndpoints(){
-        const result = await pool.query(
+        const result = await PostgresConnection.query(
             'SELECT DISTINCT endpoint FROM webhook',
         )
         return result.rows.map((row: { endpoint: any; }) => row.endpoint);
     }
     
     async getWebhookClientById(client_id: number){
-        const result = await pool.query(
+        const result = await PostgresConnection.query(
             'SELECT * FROM webhook_client WHERE client_id = $1',
             [client_id]
         )
@@ -53,7 +53,7 @@ export class WebhookRepository{
     }
 
     async getWebhookClientByIp(ip: String){
-        const result = await pool.query(
+        const result = await PostgresConnection.query(
             'SELECT * FROM webhook_client WHERE ip = $1',
             [ip]
         )

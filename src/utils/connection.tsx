@@ -1,13 +1,45 @@
 // tugas-besar-pat-booking/src/connection.tsx
 
 import { Pool } from 'pg';
+import amqp from 'amqplib';
+import { PG_HOST, PG_NAME, PG_PASS, PG_PORT, PG_USER, RABBITMQ_URL } from './config';
 
-const pool = new Pool({
-  user: process.env.DB_USER? process.env.DB_USER : 'postgres',
-  host: process.env.DB_HOST? process.env.DB_HOST : 'localhost',
-  database: process.env.DB_NAME? process.env.DB_NAME : 'bookingdb',
-  password: process.env.DB_PASS? process.env.DB_PASS : 'Aa123456',
-  port: process.env.DB_PORT? +process.env.DB_PORT : 8181, 
+export const PostgresConnection = new Pool({
+  user: PG_USER,
+  host: PG_HOST,
+  database: PG_NAME,
+  password: PG_PASS,
+  port: PG_PORT, 
 });
 
-export { pool };
+export class RabbitMQConnection{
+  static connection: any;
+
+  static async getConnection() {
+    try {
+      if(RabbitMQConnection.connection){
+        console.log("Already connected to central RabbitMQ");
+        return RabbitMQConnection.connection;
+      }
+
+      RabbitMQConnection.connection = await amqp.connect(RABBITMQ_URL);
+      console.log("Connected to central RabbitMQ");
+
+      return RabbitMQConnection.connection;
+    } catch (error) {
+      console.log("Failed connecting to RabbitMQ");
+      console.log(error);
+    }
+  }
+
+  static async createChannel(){
+    try {
+      const connection = await RabbitMQConnection.getConnection();
+      const channel = await connection.createChannel();
+      return channel;
+    } catch (error) {
+      console.log("Failed creating RabbitMQ channel");
+      console.log(error)
+    }
+  }
+}

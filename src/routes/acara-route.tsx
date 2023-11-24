@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Route } from "./route";
+import { Route } from "../types/interfaces/route";
 import { AcaraController } from "../controllers/acara-controller";
 
 export class AcaraRoute implements Route{

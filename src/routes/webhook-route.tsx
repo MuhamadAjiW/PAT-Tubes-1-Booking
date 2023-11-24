@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { WebhookController } from "../controllers/webhook-controller";
-import { Route } from "./route";
+import { Route } from "../types/interfaces/route";
 import { App } from "../app";
 
 export class WebhookRoute implements Route{
