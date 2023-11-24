@@ -1,5 +1,6 @@
-export interface QueueListener {
+export interface QueueHandler {
     queueName: String;
     exchangeName: String;
-    startListening(): Promise<void>;
+    listen(): Promise<void>;
+    publish(): Promise<void>;
 }

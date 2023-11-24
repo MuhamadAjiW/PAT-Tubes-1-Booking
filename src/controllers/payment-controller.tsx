@@ -1,11 +1,11 @@
-import { QueueListener } from "../types/interfaces/QueueListener";
+import { QueueHandler } from "../types/interfaces/QueueListener";
 import { RabbitMQConnection } from '../utils/connection';
 
-export class PaymentListener implements QueueListener {
+export class PaymentController implements QueueHandler {
     exchangeName: String = "payment-exchange";
     queueName: String = "outgoing-invoice-queue";
     
-    async startListening(): Promise<void> {
+    async listen(): Promise<void> {
         try {
             const channel = await RabbitMQConnection.createChannel()
 
@@ -24,6 +24,10 @@ export class PaymentListener implements QueueListener {
         } catch (error) {
             console.log('Failed listening for payments');
         }
+    }
+
+    async publish(): Promise<void> {
+        throw new Error("Method not implemented.");
     }
 
 }
