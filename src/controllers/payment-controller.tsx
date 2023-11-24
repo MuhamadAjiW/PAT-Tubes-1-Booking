@@ -1,4 +1,4 @@
-import { QueueHandler } from "../types/interfaces/QueueListener";
+import { QueueHandler } from "../types/interfaces/QueueHandler";
 import { RabbitMQConnection } from '../utils/connection';
 
 export class PaymentController implements QueueHandler {
