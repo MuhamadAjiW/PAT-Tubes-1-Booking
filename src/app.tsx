@@ -20,7 +20,7 @@ export class App{
         const bookingRoute = new BookingRoute();
         const acaraRoute = new AcaraRoute();
         const kursiRoute = new KursiRoute();
-        const paymentListener = new PaymentController();
+        const paymentController = new PaymentController();
 
         this.server = express();
         this.server.get('/', (req: Request, res: Response) => {
@@ -43,7 +43,8 @@ export class App{
             generalErrorHandler
         )
 
-        paymentListener.listen();
+        paymentController.initialize();
+
     }
 
     run () {
