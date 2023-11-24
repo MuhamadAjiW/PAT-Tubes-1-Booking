@@ -30,6 +30,8 @@ FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/index.tsx .
 COPY --from=prerelease /usr/src/app/package.json .
+RUN chmod -R +r node_modules
+RUN chmod +r /usr/src/app/node_modules/proxy-from-env/index.js
 
 # run the app
 USER bun
