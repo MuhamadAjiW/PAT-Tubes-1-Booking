@@ -22,8 +22,11 @@ export class WebhookRepository{
     }
 
     async cleanWebhook(){
-        const result = await PostgresConnection.query(
+        await PostgresConnection.query(
             'DELETE FROM webhook WHERE true',
+        )
+        await PostgresConnection.query(
+            'DELETE FROM webhook_client WHERE true',
         )
         return
     }
@@ -41,6 +44,14 @@ export class WebhookRepository{
             'SELECT DISTINCT endpoint FROM webhook',
         )
         return result.rows.map((row: { endpoint: any; }) => row.endpoint);
+    }
+
+    async getWebhookByClintAndEndpoint(client_id: number, endpoint: string){
+        const result = await PostgresConnection.query(
+            'SELECT * FROM webhook WHERE webhook_id = $1 and endpoint = $2',
+            [client_id, endpoint]
+        )
+        return result.rows[0];
     }
     
     async getWebhookClientById(client_id: number){

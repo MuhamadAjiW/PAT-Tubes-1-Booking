@@ -8,15 +8,19 @@ import { App } from '../app';
 import { WebhookRepository } from '../repository/webhook-repository';
 import { ConflictError } from '../types/errors/ConflictError';
 import { UnauthorizedError } from '../types/errors/UnauthorizedError';
+import { PaymentController } from './payment-controller';
 
 export class WebhookController{
     webhookRepository: WebhookRepository;
     reservedEndpoints: String[] = ["/test", "/clients", "/events"];
-    possibleEvents: String[] = ["test", "payment"];
 
     constructor(){
         this.webhookRepository = new WebhookRepository();
         this.webhookRepository.cleanWebhook()
+    }
+
+    public static async test(req: Request, res: Response){
+        console.log("Registered test webhook triggered");
     }
 
     testWebhook(){
@@ -35,6 +39,7 @@ export class WebhookController{
     registerClient(){
         return async (req: Request, res: Response) => {
             // TODO:  Verify allowed ip?
+            console.log("Webhook registration request received")
             if(!req.ip) throw new BadRequestError("Undefined ip address");
             
             const registered = await this.webhookRepository.getWebhookClientByIp(req.ip);
@@ -72,30 +77,92 @@ export class WebhookController{
             if(!registered) throw new UnauthorizedError("ip address not registered");
             if(token != registered.token) throw new UnauthorizedError("Bad token");
 
+            const registeredEndpoint = await this.webhookRepository.getWebhookByClintAndEndpoint(registered.client_id, webhookRegisterRequest.endpoint);
+            if(registeredEndpoint) throw new ConflictError("This endpoint has already been registered");
+
+            // Pick events
+            let handler: CallableFunction;
+            switch (webhookRegisterRequest.eventName) {
+                case 'test':
+                    handler = WebhookController.test;
+                    break;
+
+                case 'payment':
+                    handler = PaymentController.onPaymentEvent
+                    break;
+            
+                default:
+                    throw new BadRequestError("invalid requested event name")
+            }
+
+
             const endpoints: String[] = await this.webhookRepository.getWebhookUniqueEndpoints();
             if(!(webhookRegisterRequest.endpoint in endpoints)){
                 app.server.post( "/webhook" + webhookRegisterRequest.endpoint,
-                    async (req: Request, res: Response) => {
-                        if(!req.ip) throw new BadRequestError("Undefined ip address");
-                        let client = await this.webhookRepository.getWebhookClientByIp(req.ip);
+                    async (newreq: Request, newres: Response) => {
+                        console.log("Webhook base received a call")
+                        let webhookToken = newreq.get("API-Key");
+                        if(!webhookToken){
+                            newres.status(StatusCodes.UNAUTHORIZED).json({
+                                message: "No token provided",
+                                valid: false,
+                            }).send();
+                            return;
+                        }
+                        if(webhookToken != token){
+                            newres.status(StatusCodes.UNAUTHORIZED).json({
+                                message: "Invalid token",
+                                valid: false,
+                            }).send();
+                            return;
+                        }
+                        if(!newreq.ip){
+                            newres.status(StatusCodes.BAD_REQUEST).json({
+                                message: "Undefined ip",
+                                valid: false,
+                            }).send();
+                            return;
+                        }
+                        let client = await this.webhookRepository.getWebhookClientByIp(newreq.ip);
                         
-                        const serverUrl = `${req.protocol}://${req.get('host')}`;
+                        const serverUrl = `${newreq.protocol}://${newreq.get('host')}`;
                         const forwardEndpoint = "/webhook/" + client.client_id + webhookRegisterRequest.endpoint;
                         const forwardUrl = serverUrl + forwardEndpoint;
-                        const axiosResponse = await axios.post(forwardUrl, req.body, { headers: req.headers });
+                        const axiosResponse = await axios.post(forwardUrl, newreq.body, { headers: newreq.headers });
 
                         res.status(axiosResponse.status).send(axiosResponse.data);
                         return;
                 });
             }
+
             app.server.post( "/webhook/" + registered.client_id + webhookRegisterRequest.endpoint,
                 // TODO: Implement events
-                async (req: Request, res: Response) => {
+                async (newreq: Request, newres: Response) => {
+                    console.log("Webhook main received a call")
+                    let webhookToken = newreq.get("API-Key");
+                    if(!webhookToken){
+                        newres.status(StatusCodes.UNAUTHORIZED).json({
+                            message: "No token provided",
+                            valid: false,
+                        }).send();
+                        return;
+                    }
+                    if(webhookToken != token){
+                        newres.status(StatusCodes.UNAUTHORIZED).json({
+                            message: "Invalid token",
+                            valid: false,
+                        }).send();
+                        return;
+                    }
+
                     res.status(StatusCodes.OK).json({
                         message: webhookRegisterRequest.eventName + " webhook triggered",
                         valid: true,
                         data: null
-                    });
+                    }).send();
+
+                    await handler(newreq, newres);
+
                     console.log(webhookRegisterRequest.eventName + " webhook triggered");
                     return;
             });

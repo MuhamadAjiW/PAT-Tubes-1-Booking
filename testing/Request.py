@@ -26,7 +26,7 @@ def register():
     response = requests.post(url)
     return response
 
-def registerEndpoint(eventName, endpoint):
+def registerEndpoint(eventName, endpoint, token):
     url = baseurl + "/webhook"
 
     data = {
@@ -35,7 +35,7 @@ def registerEndpoint(eventName, endpoint):
     }
     headers = {
         'Content-Type': 'application/json',
-        'API-Key': '776fd992-96d0-438c-9b71-47f77dacf33a'
+        'API-Key': token
         }
 
     response = requests.post(url, headers=headers, json=data)
@@ -63,8 +63,8 @@ def get():
 
 if __name__ == "__main__":
     # response = register()
-    # response = registerEndpoint("test", "/euy")
-    response = test_webhook("/webhook/euy")
+    # response = registerEndpoint("payment", "/euy2", "b0704a8f-ce53-4606-9f6e-0cb40f62dbb6")
+    response = test_webhook("/webhook/payment")
     # response = book(1, 1, 1)
 
     print("\nstatus code:", response.status_code)
