@@ -1,0 +1,82 @@
+version: "3.8"
+
+services:
+  client-app:
+    container_name: client-app
+    build: 
+      context: ./tugas-besar-pat-client
+      dockerfile: Dockerfile
+    ports:
+      - '5173:5173'
+    stdin_open: true
+    tty: true
+    networks:
+      - dockerNet
+
+  client-app-db:
+    container_name: client-app-db
+    image: postgres:15.0-alpine
+    volumes:
+      - client-app-db:/var/lib/postgresql/data
+      - ./tugas-besar-pat-client/database:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: ${POSTGRES_CLIENT_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_CLIENT_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_CLIENT_DB}
+    restart: always
+    ports:
+      - 5433:5433
+    command: -p 5433
+
+  booking-app:
+    container_name: booking-app
+    build: 
+      context: ./tugas-besar-pat-booking
+      dockerfile: Dockerfile
+    ports:
+      - 3100:3100
+    volumes:
+      - ./tugas-besar-pat-booking/src:/usr/src/app/src
+    networks:
+      - dockerNet
+    depends_on:
+      - booking-queue
+      - booking-db
+
+  booking-queue:
+    container_name: booking-queue
+    image: rabbitmq:3.13.0-rc.2-management
+    ports:
+      - 8181:5672
+      - 8182:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: test-user
+      RABBITMQ_DEFAULT_PASS: test-user
+    networks:
+      - dockerNet
+
+  booking-db:
+    container_name: booking-db
+    image: postgres:latest
+    ports:
+      - 8183:5432
+    volumes:
+      - booking-db:/var/lib/postgresql/data
+      - ./tugas-besar-pat-booking/db:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: ${POSTGRES_BOOOKING_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_BOOOKING_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_BOOOKING_DB}
+    restart: always
+    command: -p 5432
+    networks:
+      - dockerNet
+
+networks:
+  dockerNet:
+    external:
+      true
+
+volumes:
+  client-app-db:
+  booking-db:

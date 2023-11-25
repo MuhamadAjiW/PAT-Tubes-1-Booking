@@ -11,18 +11,17 @@ export class KursiController {
         this.kursiRepository = new KursiRepository();
     }
 
-    getDistinctKursiId(){
-        return async(req: Request, res: Response) => {
-            try {
-                const data = await this.kursiRepository.getDistinctKursiId();
-                res.status(StatusCodes.OK).json({
-                    message: "Fetch successful",
-                    valid: true,
-                    data: data
-                });
-            } catch (error) {
-                throw Error("Failed to fetch distinct kursiId");
-            }
+    async getDistinctKursiId(req: Request, res: Response) {
+        try {
+            const acaraId = Number(req.query.acaraId);
+            const data = await this.kursiRepository.getDistinctKursiId(acaraId);
+            res.status(StatusCodes.OK).json({
+                message: "Fetch successful",
+                valid: true,
+                data: data
+            });
+        } catch (error) {
+            throw Error("Failed to fetch distinct kursiId");
         }
     }
 }

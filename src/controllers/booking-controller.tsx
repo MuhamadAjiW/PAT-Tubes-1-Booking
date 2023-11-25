@@ -13,23 +13,20 @@ export class BookingController{
         this.bookingRepository = new BookingRepository();
     }
 
-    book(){
-        return async (req: Request, res: Response) => {
-            let kursiBookRequest: BookRequest;
-            try {
-                kursiBookRequest = req.body;
-            } catch (error) {
-                throw new BadRequestError("Bad request parameters");
-            }
-        
-            // TODO: Implement properly
-            const data = await this.bookingRepository.insert(kursiBookRequest);
-        
-            res.status(StatusCodes.OK).json({
-                message: "Booking successful",
-                valid: true,
-                data: data
-            });
+    async book(req: Request, res: Response) {
+        let kursiBookRequest: BookRequest;
+        try {
+            kursiBookRequest = req.body;
+        } catch (error) {
+            throw new BadRequestError("Bad request parameters");
         }
+    
+        const data = await this.bookingRepository.insert(kursiBookRequest);
+    
+        res.status(StatusCodes.OK).json({
+            message: "Booking successful",
+            valid: true,
+            data: data
+        });
     }
 }

@@ -1,10 +1,10 @@
 import { Express, Request, Response } from "express";
 import express from 'express';
 import cors from 'cors';
-import requestIp from 'request-ip'
+// import requestIp from 'request-ip'
 import { SERVER_PORT } from "./utils/config";
-import { PaymentController } from "./controllers/payment-controller";
-import { WebhookRoute } from "./routes/webhook-route";
+// import { PaymentController } from "./controllers/payment-controller";
+// import { WebhookRoute } from "./routes/webhook-route";
 import { BookingRoute } from "./routes/booking-route";
 import { AcaraRoute } from "./routes/acara-route";
 import { KursiRoute } from "./routes/kursi-route";
@@ -16,11 +16,11 @@ export class App{
     server: Express;
 
     constructor(){
-        const webhookRoute = new WebhookRoute(this);
+        // const webhookRoute = new WebhookRoute(this);
         const bookingRoute = new BookingRoute();
         const acaraRoute = new AcaraRoute();
         const kursiRoute = new KursiRoute();
-        const paymentController = new PaymentController();
+        // const paymentController = new PaymentController();
 
         this.server = express();
         this.server.get('/', (req: Request, res: Response) => {
@@ -28,11 +28,11 @@ export class App{
         });
 
         this.server.use(
-            requestIp.mw(),
+            // requestIp.mw(),
             cors(),
             express.json(),
             express.urlencoded({ extended: true }),
-            webhookRoute.getRoutes(),
+            // webhookRoute.getRoutes(),
             bookingRoute.getRoutes(),
             acaraRoute.getRoutes(),
             kursiRoute.getRoutes(),
@@ -43,7 +43,7 @@ export class App{
             generalErrorHandler
         )
 
-        paymentController.initialize();
+        // paymentController.initialize();
 
     }
 

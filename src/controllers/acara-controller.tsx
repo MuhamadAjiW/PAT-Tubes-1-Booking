@@ -11,18 +11,16 @@ export class AcaraController {
         this.acaraRepository = new AcaraRepository();
     }
 
-    getDistinctAcaraId(){
-        return async(req: Request, res: Response) => {            
-            try {
-                const data = await this.acaraRepository.getDistinctAcaraId();
-                res.status(StatusCodes.OK).json({
-                    message: "Fetch successful",
-                    valid: true,
-                    data: data
-                });
-            } catch (error) {
-                throw Error("Error fetching distinct acaraId");
-            }
+    async getDistinctAcaraId(req: Request, res: Response) {
+        try {
+            const data = await this.acaraRepository.getDistinctAcaraId();
+            res.status(StatusCodes.OK).json({
+                message: "Fetch successful",
+                valid: true,
+                data: data
+            });
+        } catch (error) {
+            throw new Error("Bad request parameters");
         }
     }
 }

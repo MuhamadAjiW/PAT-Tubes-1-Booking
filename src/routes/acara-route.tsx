@@ -11,7 +11,12 @@ export class AcaraRoute implements Route{
 
     getRoutes(): Router {
         return Router()
-            .get("/api/acara",
-                this.AcaraController.getDistinctAcaraId())
+            .get("/api/acara", async (req, res, next) => {
+                try {
+                    await this.AcaraController.getDistinctAcaraId(req, res);
+                } catch (err) {
+                    next(err);
+                }
+            });
     }
 }

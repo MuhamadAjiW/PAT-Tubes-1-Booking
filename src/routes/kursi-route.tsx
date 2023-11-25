@@ -11,7 +11,12 @@ export class KursiRoute implements Route{
 
     getRoutes(): Router {
         return Router()
-            .get("/api/kursi",
-                this.KursiController.getDistinctKursiId())
+            .get("/api/kursi", async (req, res, next) => {
+                try {
+                    await this.KursiController.getDistinctKursiId(req, res);
+                } catch (err) {
+                    next(err);
+                }
+            });
     }
 }
