@@ -133,7 +133,7 @@ export class WebhookController{
                         const forwardUrl = serverUrl + forwardEndpoint;
                         const axiosResponse = await axios.post(forwardUrl, newreq.body, { headers: newreq.headers });
 
-                        res.status(axiosResponse.status).send(axiosResponse.data);
+                        newres.status(axiosResponse.status).send(axiosResponse.data);
                         return;
                 });
             }
@@ -158,15 +158,13 @@ export class WebhookController{
                         return;
                     }
 
-                    res.status(StatusCodes.OK).json({
+                    newres.status(StatusCodes.OK).json({
                         message: webhookRegisterRequest.eventName + " webhook triggered",
                         valid: true,
                         data: null
                     }).send();
 
                     await handler(newreq, newres);
-
-                    console.log(webhookRegisterRequest.eventName + " webhook triggered");
                     return;
             });
             this.webhookRepository.insertWebhook(webhookRegisterRequest, registered.client_id);
@@ -175,7 +173,7 @@ export class WebhookController{
                 message: "Webhook addition successful",
                 valid: true,
                 data: null
-            });
+            }).send();
             return;
         }
     }
