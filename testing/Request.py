@@ -41,10 +41,11 @@ def registerEndpoint(eventName, endpoint):
     response = requests.post(url, headers=headers, json=data)
     return response
 
-def book(acaraId, kursiId, userId):
+def book(email, acaraId, kursiId, userId):
     url = baseurl + "/api/book"
 
     data = {
+        "email": email,
         "acaraId": acaraId,
         "kursiId": kursiId,
         "userId": userId,

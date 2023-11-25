@@ -2,6 +2,7 @@
 
 # Additional
 .env.local
+resource/
 
 # Logs
 

@@ -1,9 +1,9 @@
-import { BookRequest } from '../types/BookRequest';
-import { pool } from '../utils/connection';
+import { BookingRequest } from '../types/BookingRequest';
+import { PostgresConnection } from '../utils/connection';
 
 export class BookingRepository{
     async insert(bookRequest: BookRequest){
-        const client = await pool.connect();
+        const client = await PostgresConnection.connect();
         try {
             await client.query('BEGIN');
 
