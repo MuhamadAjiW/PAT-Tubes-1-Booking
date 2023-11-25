@@ -16,6 +16,9 @@ export class WebhookController{
 
     constructor(){
         this.webhookRepository = new WebhookRepository();
+
+        // TODO: Should be reloading webhooks from db instead of cleaning it
+        // Implementing it would be a hell of a task though
         this.webhookRepository.cleanWebhook()
     }
 
