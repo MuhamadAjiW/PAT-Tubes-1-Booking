@@ -1,6 +1,6 @@
 import requests
 basehost = "localhost"
-baseport = "3100"
+baseport = "8180"
 baseurl = "http://" + basehost + ":" + baseport
 
 rabbitmqHost = "localhost"

@@ -4,6 +4,7 @@ import { PAYMENT_SERVER_URL, SERVER_API_KEY } from "../utils/config";
 import { BadRequestError } from "../types/errors/BadRequestError";
 import { BookingRequest } from "../types/BookingRequest";
 import axios from "axios";
+import { StandardResponse } from "../types/StandardResponse";
 
 export class PaymentController {
     // TODO: Forward invoice and payment url to client
@@ -24,6 +25,18 @@ export class PaymentController {
         const axiosResponse = await axios.post(serverUrl, data, { headers: headers });
         console.log(axiosResponse.data);
 
-        return JSON.parse(axiosResponse.data);
+        let response: StandardResponse;
+        try {
+            response = axiosResponse.data;
+        } catch (error) {
+            console.log("Response is not standard");
+            response = {
+                message: "Response is not standard",
+                valid: false,
+                data: axiosResponse.data
+            };
+        }
+
+        return response;
     }
 }

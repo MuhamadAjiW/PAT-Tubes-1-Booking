@@ -51,33 +51,17 @@ export class BookingController{
             else{
                 // TODO: Validate request
                 console.log("Booking request received");
-                try {
-                    const data = await this.bookingRepository.insert(kursiBookRequest);
-                  } catch (error) {
-                    console.log('Error inserting booking:');
-                    throw new Error('Error inserting booking');
-                  }
-            
-                // try {
-                // const paymentData = await PaymentController.requestPayment(kursiBookRequest);
-                // } catch (error) {
-                // console.log('Error requesting payment:');
-                // throw new Error('Error requesting payment');
-                // }
+                const data = await this.bookingRepository.insert(kursiBookRequest);
+
+                const paymentData = await PaymentController.requestPayment(kursiBookRequest);
 
                 // TODO: Forward to client
 
-                try {
-                    res.status(StatusCodes.OK).json({
-                      message: "Booking ongoing",
-                      valid: true,
-                        
-                    });
-                  } catch (error) {
-                    console.error('Error sending response:', error);
-                    throw new Error('Error sending response');
-                  }
-
+                res.status(StatusCodes.OK).json({
+                    message: "Booking ongoing",
+                    valid: true,
+                    data: paymentData
+                });
             }
         }
     }
