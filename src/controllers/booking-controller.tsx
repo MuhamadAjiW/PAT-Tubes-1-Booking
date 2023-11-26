@@ -1,12 +1,15 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { WebhookRegisterRequest } from '../types/WebhookRegisterRequest';
-import { badRequestErrorHandler, conflictErrorHandler, generalErrorHandler, notFoundErrorHandler, unauthorizedErrorHandler } from '../middlewares/error-middleware';
 import { BadRequestError } from '../types/errors/BadRequestError';
 import { BookingRequest } from '../types/BookingRequest';
 import { BookingRepository } from '../repository/booking-repository';
 import { FailureSimulator } from '../utils/failure-simulator';
 import { PaymentController } from './payment-controller';
+import { SERVER_FILE_FOLDER } from '../utils/config';
+import { z } from 'zod';
+import { SignatureUtil } from '../utils/signature-utils';
+import { UnauthorizedError } from '../types/errors/UnauthorizedError';
+import { NotFoundError } from '../types/errors/NotFoundError';
 
 export class BookingController{
     bookingRepository: BookingRepository;
@@ -47,6 +50,27 @@ export class BookingController{
                     data: paymentData
                 });
             }
+        }
+    }
+
+    getBookingPDF(){
+        return async (req: Request, res: Response) => {
+            const signatureParam = z.string().safeParse(req.query.signature as string)
+            if(!signatureParam.success) throw new BadRequestError(signatureParam.error.message);
+            
+            let signature = signatureParam.data;
+            if(!SignatureUtil.verifySignature(signature)) throw new UnauthorizedError("Bad signature");
+
+            const filename = SignatureUtil.getIdentifier(signature);
+            if(!filename) throw new NotFoundError("File not found");
+
+            const filePath = SERVER_FILE_FOLDER + filename;
+
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="booking.pdf"`);
+
+            console.log("Booking pdf sent")
+            res.sendFile(filePath);
         }
     }
 }

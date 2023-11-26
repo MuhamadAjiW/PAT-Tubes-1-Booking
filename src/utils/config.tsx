@@ -1,4 +1,6 @@
-export const SERVER_FILE_FOLDER: string ="./resource/"
+import { join } from "path";
+
+export const SERVER_FILE_FOLDER: string = join(__dirname, "../../resource/")
 export const SERVER_API_KEY: string ="ticketServerApiToken"
 export const SERVER_PORT: number = process.env.PORT? +process.env.PORT : 3000;
 

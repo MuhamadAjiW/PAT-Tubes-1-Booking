@@ -5,8 +5,12 @@ import { BookingInfo } from '../types/BookingInfo';
 import QRCode from 'qrcode'
 
 export class PDFUtils{
-    public static async generateBookingSuccess(filename: string, info: BookingInfo): Promise<void>{
+    public static async generateBookingSuccess(info: BookingInfo): Promise<string>{
         const doc = new PDFDocument()
+        console.log(SERVER_FILE_FOLDER);
+
+        const filename: string = info.email + "-" + info.namaAcara + "-" + info.bookingId + "-" + info.invoiceNumber + ".pdf";
+
         doc.pipe(fs.createWriteStream(SERVER_FILE_FOLDER + filename));
 
         doc.fontSize(32).text('Booking Success', {align: 'center'}).moveDown();
@@ -22,10 +26,13 @@ export class PDFUtils{
         doc.image(qrCodeBuffer, { fit: [150, 150], align: 'center' });
 
         doc.end()
+
+        return filename;
     }
 
-    public static async generateBookingFailed(filename: string, info: BookingInfo): Promise<void>{
+    public static async generateBookingFailed(info: BookingInfo): Promise<string>{
         const doc = new PDFDocument()
+        const filename: string = info.email + "-" + info.namaAcara + "-" + info.bookingId + "-" + info.invoiceNumber + ".pdf";
         doc.pipe(fs.createWriteStream(SERVER_FILE_FOLDER + filename));
 
         doc.fontSize(32).text('Booking Failed', {align: 'center'}).moveDown();
@@ -38,6 +45,8 @@ export class PDFUtils{
         doc.fontSize(12).text(`Reason                    : ${info.failureReason}`).moveDown();
 
         doc.end()
+
+        return filename;
     }
 
 

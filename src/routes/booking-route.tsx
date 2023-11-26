@@ -12,6 +12,8 @@ export class BookingRoute implements Route{
     getRoutes(): Router {
         return Router()
             .post("/api/book",
-                this.BookingController.book());
+                this.BookingController.book())
+            .get("/api/book",
+                this.BookingController.getBookingPDF());
     }
 }

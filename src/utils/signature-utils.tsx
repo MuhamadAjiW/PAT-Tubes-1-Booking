@@ -22,13 +22,9 @@ export class SignatureUtil{
     public static verifySignature(signature: string): boolean{
         const decryptedSignature = this.decryptSignature(signature);
         const parts = decryptedSignature.split("|");
-        console.log(decryptedSignature);
 
         if (parts.length == 3){
-            console.log(parts[0])
             const expirationTime = moment(parts[1], this.dateFormat);
-            console.log(parts[1]);
-            console.log(expirationTime.isAfter(moment()));
             return expirationTime.isAfter(moment());
         } else {
             return false;
@@ -38,10 +34,8 @@ export class SignatureUtil{
     public static getIdentifier(signature: string){
         const decryptedSignature = this.decryptSignature(signature);
         const parts = decryptedSignature.split("|");
-        console.log(decryptedSignature);
 
         if (parts.length == 3){
-            console.log(parts[0])
             return parts[0];
         } else {
             return null;
