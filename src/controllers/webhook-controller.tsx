@@ -68,8 +68,7 @@ export class WebhookController{
 
             let webhookRegisterRequest: WebhookRegisterRequest
             try {
-                webhookRegisterRequest = req.body;
-                if(!webhookRegisterRequest.endpoint || !webhookRegisterRequest.eventName) throw Error();
+                webhookRegisterRequest = WebhookRegisterRequest.parse(req.body);
             } catch (error) {
                 throw new BadRequestError("Bad request parameters");
             }

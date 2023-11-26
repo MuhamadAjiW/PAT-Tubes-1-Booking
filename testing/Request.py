@@ -66,8 +66,8 @@ def get():
 if __name__ == "__main__":
     # response = register()
     # response = registerEndpoint("test", "/euy2", "4deed586-5227-4598-b2de-2a4c09094f7d")
-    response = test_webhook("/webhook/euy2", "4deed586-5227-4598-b2de-2a4c09094f7d")
-    # response = book(1, 1, 1)
+    # response = test_webhook("/webhook/euy2", "4deed586-5227-4598-b2de-2a4c09094f7d")
+    response = book("Test@email.com", 1, 1, 1)
 
     print("\nstatus code:", response.status_code)
     print("Response content:")

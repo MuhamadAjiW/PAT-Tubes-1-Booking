@@ -6,6 +6,7 @@ import { BadRequestError } from '../types/errors/BadRequestError';
 import { BookingRequest } from '../types/BookingRequest';
 import { BookingRepository } from '../repository/booking-repository';
 import { FailureSimulator } from '../utils/failure-simulator';
+import { PaymentController } from './payment-controller';
 
 export class BookingController{
     bookingRepository: BookingRepository;
@@ -18,13 +19,13 @@ export class BookingController{
         return async (req: Request, res: Response) => {
             let kursiBookRequest: BookingRequest;
             try {
-                kursiBookRequest = req.body;
+                kursiBookRequest = BookingRequest.parse(req.body);
             } catch (error) {
                 throw new BadRequestError("Bad request parameters");
             }
 
             if(FailureSimulator.simulate()){
-
+                // TODO: Send failed pdf
 
 
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -35,8 +36,9 @@ export class BookingController{
             }
             else{
                 const data = await this.bookingRepository.insert(kursiBookRequest);
-            
-
+                
+                // TODO: Forward to payment
+                PaymentController.requestPayment(kursiBookRequest);
 
                 res.status(StatusCodes.OK).json({
                     message: "Booking successful",

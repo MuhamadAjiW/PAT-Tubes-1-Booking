@@ -2,7 +2,7 @@ import { BookingRequest } from '../types/BookingRequest';
 import { PostgresConnection } from '../utils/connection';
 
 export class BookingRepository{
-    async insert(bookRequest: BookRequest){
+    async insert(bookRequest: BookingRequest){
         const client = await PostgresConnection.connect();
         try {
             await client.query('BEGIN');
