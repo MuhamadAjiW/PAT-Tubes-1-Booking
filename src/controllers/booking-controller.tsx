@@ -15,6 +15,7 @@ import { AcaraRepository } from '../repository/acara-repository';
 import { AcaraInfo } from '../types/AcaraInfo';
 import { BookingQuery } from '../types/BookingQuery';
 import { ConflictError } from '../types/errors/ConflictError';
+import { InvoiceRequest } from '../types/InvoiceRequest';
 
 export class BookingController{
     bookingRepository: BookingRepository;
@@ -56,8 +57,16 @@ export class BookingController{
 
                 console.log("Booking request received");
                 const data = await this.bookingRepository.insert(kursiBookRequest);
+                const invoiceRequest: InvoiceRequest = ({
+                    email: kursiBookRequest.email,
+                    acaraId: kursiBookRequest.acaraId,
+                    kursiId: kursiBookRequest.kursiId,
+                    userId: kursiBookRequest.kursiId,
+                    bookingId: data.bookingId
+                })
 
-                const paymentData = await PaymentController.requestPayment(kursiBookRequest);
+                // TODO: Test
+                const paymentData = await PaymentController.requestPayment(invoiceRequest);
 
                 res.status(StatusCodes.OK).json({
                     message: "Booking ongoing",

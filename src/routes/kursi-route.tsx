@@ -14,12 +14,16 @@ export class KursiRoute implements Route{
             .get("/api/kursi", 
                 this.KursiController.getDistinctKursiId())
 
+            // TODO: Test
             .post("/api/acara/:acaraId/kursi",
                 this.KursiController.createKursi())
+            // TODO: Test
             .get("/api/acara/:acaraId/kursi/:kursiId",
                 this.KursiController.getKursiById())
+            // TODO: Test
             .put("/api/acara/:acaraId/kursi/:kursiId",
                 this.KursiController.updateKursiById())
+            // TODO: Test
             .delete("/api/acara/:acaraId/kursi/:kursiId",
                 this.KursiController.deleteKursiById());
     }

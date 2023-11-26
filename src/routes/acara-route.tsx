@@ -13,13 +13,17 @@ export class AcaraRoute implements Route{
         return Router()
             .get("/api/acara",
                 this.AcaraController.getDistinctAcaraId())
-                
+
+            // TODO: Test
             .post("/api/acara",
                 this.AcaraController.createAcara())
+            // TODO: Test
             .get("/api/acara/:identifier",
                 this.AcaraController.getAcaraById())
+            // TODO: Test
             .put("/api/acara/:identifier",
                 this.AcaraController.updateAcaraById())
+            // TODO: Test
             .delete("/api/acara/:identifier",
                 this.AcaraController.deleteAcaraById());
     }

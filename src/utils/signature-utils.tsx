@@ -2,7 +2,6 @@ import * as crypto from 'crypto';
 import moment from 'moment';
 
 export class SignatureUtil{
-    // TODO: Implement
     public static PDFExpiry: number = 300 * 1000 // in milis
     public static secretKey: string = "signedsignedsignedsignedsignedee";
     public static dateFormat = "YYYY-MM-DDTHH-mm-ss.SSS";
