@@ -81,9 +81,6 @@ export class WebhookController{
             if(token != registered.token) throw new UnauthorizedError("Bad token");
 
             const registeredEndpoint = await this.webhookRepository.getWebhookByClintAndEndpoint(registered.client_id, webhookRegisterRequest.endpoint);
-            console.log(registered.client_id);
-            console.log(webhookRegisterRequest.endpoint);
-            console.log(registeredEndpoint);
 
             if(registeredEndpoint) throw new ConflictError("This endpoint has already been registered");
 
