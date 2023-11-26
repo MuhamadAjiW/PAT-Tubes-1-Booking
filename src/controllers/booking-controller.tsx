@@ -59,10 +59,18 @@ export class BookingController{
             if(!signatureParam.success) throw new BadRequestError(signatureParam.error.message);
             
             let signature = signatureParam.data;
-            if(!SignatureUtil.verifySignature(signature)) throw new UnauthorizedError("Bad signature");
-
-            const filename = SignatureUtil.getIdentifier(signature);
+            let filename;
+            let valid
+            try {
+                valid = SignatureUtil.verifySignature(signature)
+            } catch (error) {
+                throw new UnauthorizedError("Bad signature");
+            }
+            if(!valid) throw new UnauthorizedError("Signature timed out");
+            
+            filename = SignatureUtil.getIdentifier(signature);
             if(!filename) throw new NotFoundError("File not found");
+
 
             const filePath = SERVER_FILE_FOLDER + filename;
 
