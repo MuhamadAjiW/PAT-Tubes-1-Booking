@@ -3,13 +3,15 @@ import fs from 'fs'
 import { SERVER_FILE_FOLDER } from './config';
 import { BookingInfo } from '../types/BookingInfo';
 import QRCode from 'qrcode'
+import moment from 'moment';
+import { SignatureUtil } from './signature-utils';
 
 export class PDFUtils{
     public static async generateBookingSuccess(info: BookingInfo): Promise<string>{
         const doc = new PDFDocument()
         console.log(SERVER_FILE_FOLDER);
 
-        const filename: string = info.email + "-" + info.namaAcara + "-" + info.bookingId + "-" + info.invoiceNumber + ".pdf";
+        const filename: string = info.email + "-" + info.namaAcara + "-" + moment().format(SignatureUtil.dateFormat) + ".pdf";
 
         doc.pipe(fs.createWriteStream(SERVER_FILE_FOLDER + filename));
 

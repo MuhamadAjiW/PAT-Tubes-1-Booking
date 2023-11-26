@@ -28,12 +28,11 @@ export class PaymentController {
         const invoice: Invoice = invoiceData.data;
         
         
-        // TODO: Forward invoice and payment url to client
         const acaraRepository: AcaraRepository = new AcaraRepository();
         if(invoice.status == PaymentStatusEnum.FAILED){
             console.log("Simulating failure in payment server...")
             const acaraInfo: AcaraInfo = await acaraRepository.getAcaraById(invoice.request.acaraId);
-
+            
             const filename: string = await PDFUtils.generateBookingFailed({
                 email: invoice.request.email,
                 namaAcara: acaraInfo.nama_acara,
@@ -43,7 +42,8 @@ export class PaymentController {
                 failureReason: "Failure in payment server"
             })
             const filePath = SERVER_FILE_FOLDER + filename;
-
+            
+            // TODO: Forward invoice and payment url to client
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).sendFile(filePath);
         }
         else{
@@ -58,7 +58,8 @@ export class PaymentController {
                 kursiId: invoice.request.kursiId,
             })
             const filePath = SERVER_FILE_FOLDER + filename;
-
+            
+            // TODO: Forward invoice and payment url to client
             res.status(StatusCodes.OK).sendFile(filePath);
         }
     }
