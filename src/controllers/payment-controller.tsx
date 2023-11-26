@@ -32,6 +32,8 @@ export class PaymentController {
         if(invoice.status == PaymentStatusEnum.FAILED){
             console.log("Simulating failure in payment server...")
             const acaraInfo: AcaraInfo = await acaraRepository.getAcaraById(invoice.request.acaraId);
+
+            // _TODO: Rollback db in booking?
             
             const filename: string = await PDFUtils.generateBookingFailed({
                 email: invoice.request.email,
