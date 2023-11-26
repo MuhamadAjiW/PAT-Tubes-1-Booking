@@ -35,15 +35,16 @@ export class BookingController{
                 });
             }
             else{
+                // TODO: Validate request
                 const data = await this.bookingRepository.insert(kursiBookRequest);
                 
-                // TODO: Forward to payment
-                PaymentController.requestPayment(kursiBookRequest);
+                const paymentData = await PaymentController.requestPayment(kursiBookRequest);
+                // TODO: Forward to client
 
                 res.status(StatusCodes.OK).json({
-                    message: "Booking successful",
+                    message: "Booking ongoing",
                     valid: true,
-                    data: data
+                    data: paymentData
                 });
             }
         }

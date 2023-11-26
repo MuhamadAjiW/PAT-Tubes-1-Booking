@@ -22,8 +22,8 @@ export class PaymentController {
             "Authorization": `Bearer ${SERVER_API_KEY}`
         }
         const axiosResponse = await axios.post(serverUrl, data, { headers: headers });
-        console.log(axiosResponse.data)
+        console.log(axiosResponse.data);
 
-        // TODO: Forward to client
+        return JSON.parse(axiosResponse.data);
     }
 }
