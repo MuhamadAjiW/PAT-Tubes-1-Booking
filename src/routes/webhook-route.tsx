@@ -8,7 +8,7 @@ export class WebhookRoute implements Route{
     app: App;
 
     constructor(app: App) {
-        this.webhookController = new WebhookController();
+        this.webhookController = new WebhookController(app);
         this.app = app;
     }
 
@@ -19,6 +19,6 @@ export class WebhookRoute implements Route{
             .post("/webhook/clients",
                 this.webhookController.registerClient())
             .post("/webhook",
-                this.webhookController.registerWebhook(this.app))
+                this.webhookController.registerWebhook())
     }
 }

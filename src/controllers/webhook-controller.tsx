@@ -11,15 +11,14 @@ import { UnauthorizedError } from '../types/errors/UnauthorizedError';
 import { PaymentController } from './payment-controller';
 
 export class WebhookController{
+    app: App;
     webhookRepository: WebhookRepository;
     reservedEndpoints: String[] = ["/test", "/clients", "/events"];
 
-    constructor(){
+    constructor(app: App){
+        this.app = app;
         this.webhookRepository = new WebhookRepository();
-
-        // TODO: Should be reloading webhooks from db instead of cleaning it
-        // Implementing it would be a hell of a task though
-        this.webhookRepository.cleanWebhook()
+        this.refreshWebhooks()
     }
 
     public static async test(req: Request, res: Response){
@@ -60,7 +59,7 @@ export class WebhookController{
         }
     }
 
-    registerWebhook(app: App){
+    registerWebhook(){
         return async (req: Request, res: Response) => {
             let token = req.get("API-Key");
             if(!token) throw new UnauthorizedError("No token provided");            
@@ -81,6 +80,10 @@ export class WebhookController{
             if(token != registered.token) throw new UnauthorizedError("Bad token");
 
             const registeredEndpoint = await this.webhookRepository.getWebhookByClintAndEndpoint(registered.client_id, webhookRegisterRequest.endpoint);
+            console.log(registered.client_id);
+            console.log(webhookRegisterRequest.endpoint);
+            console.log(registeredEndpoint);
+
             if(registeredEndpoint) throw new ConflictError("This endpoint has already been registered");
 
             // Pick events
@@ -101,20 +104,13 @@ export class WebhookController{
 
             const endpoints: String[] = await this.webhookRepository.getWebhookUniqueEndpoints();
             if(!(webhookRegisterRequest.endpoint in endpoints)){
-                app.server.post( "/webhook" + webhookRegisterRequest.endpoint,
+                this.app.server.post( "/webhook" + webhookRegisterRequest.endpoint,
                     async (newreq: Request, newres: Response) => {
                         console.log("Webhook base received a call")
                         let webhookToken = newreq.get("API-Key");
                         if(!webhookToken){
                             newres.status(StatusCodes.UNAUTHORIZED).json({
                                 message: "No token provided",
-                                valid: false,
-                            }).send();
-                            return;
-                        }
-                        if(webhookToken != token){
-                            newres.status(StatusCodes.UNAUTHORIZED).json({
-                                message: "Invalid token",
                                 valid: false,
                             }).send();
                             return;
@@ -126,8 +122,16 @@ export class WebhookController{
                             }).send();
                             return;
                         }
+
                         let client = await this.webhookRepository.getWebhookClientByIp(newreq.ip);
-                        
+                        if(!client){
+                            newres.status(StatusCodes.UNAUTHORIZED).json({
+                                message: "Unregistered client",
+                                valid: false,
+                            }).send();
+                            return;
+                        }
+
                         const serverUrl = `${newreq.protocol}://${newreq.get('host')}`;
                         const forwardEndpoint = "/webhook/" + client.client_id + webhookRegisterRequest.endpoint;
                         const forwardUrl = serverUrl + forwardEndpoint;
@@ -138,7 +142,7 @@ export class WebhookController{
                 });
             }
 
-            app.server.post( "/webhook/" + registered.client_id + webhookRegisterRequest.endpoint,
+            this.app.server.post( "/webhook/" + registered.client_id + webhookRegisterRequest.endpoint,
                 // TODO: Implement events
                 async (newreq: Request, newres: Response) => {
                     console.log("Webhook main received a call")
@@ -176,5 +180,100 @@ export class WebhookController{
             }).send();
             return;
         }
+    }
+
+    private async refreshWebhooks(){
+        console.log("Refreshing webhooks")
+
+        const endpoints: String[] = await this.webhookRepository.getWebhookUniqueEndpoints();
+        for (const endpoint of endpoints){
+            this.app.server.post( "/webhook" + endpoint,
+                async (newreq: Request, newres: Response) => {
+                    console.log("Webhook base received a call")
+                    let webhookToken = newreq.get("API-Key");
+                    if(!webhookToken){
+                        newres.status(StatusCodes.UNAUTHORIZED).json({
+                            message: "No token provided",
+                            valid: false,
+                        }).send();
+                        return;
+                    }
+                    if(!newreq.ip){
+                        newres.status(StatusCodes.BAD_REQUEST).json({
+                            message: "Undefined ip",
+                            valid: false,
+                        }).send();
+                        return;
+                    }
+                    
+                    let client = await this.webhookRepository.getWebhookClientByIp(newreq.ip);
+                    if(!client){
+                        newres.status(StatusCodes.UNAUTHORIZED).json({
+                            message: "Unregistered client",
+                            valid: false,
+                        }).send();
+                        return;
+                    }
+
+                    const serverUrl = `${newreq.protocol}://${newreq.get('host')}`;
+                    const forwardEndpoint = "/webhook/" + client.client_id + endpoint;
+                    const forwardUrl = serverUrl + forwardEndpoint;
+                    const axiosResponse = await axios.post(forwardUrl, newreq.body, { headers: newreq.headers });
+
+                    newres.status(axiosResponse.status).send(axiosResponse.data);
+                    return;
+            });
+        }
+
+        const webhooks = await this.webhookRepository.getWebhookAll();
+        console.log(webhooks)
+        for(const webhook of webhooks){
+            let handler: CallableFunction;
+            switch (webhook.event_name) {
+                case 'test':
+                    handler = WebhookController.test;
+                    break;
+
+                case 'payment':
+                    handler = PaymentController.onPaymentEvent
+                    break;
+            
+                default:
+                    throw new BadRequestError("invalid requested event name")
+            }
+            
+            const client = await this.webhookRepository.getWebhookClientById(webhook.client_id);
+            this.app.server.post( "/webhook/" + client.client_id + webhook.endpoint,
+            // TODO: Implement events
+            async (newreq: Request, newres: Response) => {
+                console.log("Webhook main received a call")
+                let webhookToken = newreq.get("API-Key");
+                if(!webhookToken){
+                    newres.status(StatusCodes.UNAUTHORIZED).json({
+                        message: "No token provided",
+                        valid: false,
+                    }).send();
+                    return;
+                }
+                if(webhookToken != client.token){
+                    newres.status(StatusCodes.UNAUTHORIZED).json({
+                        message: "Invalid token",
+                        valid: false,
+                    }).send();
+                    return;
+                }
+
+                newres.status(StatusCodes.OK).json({
+                    message: webhook.event_name + " webhook triggered",
+                    valid: true,
+                    data: null
+                }).send();
+
+                await handler(newreq, newres);
+                return;
+            });
+        }
+
+        console.log("Webhook refreshed")
     }
 }

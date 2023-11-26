@@ -6,7 +6,7 @@ baseurl = "http://" + basehost + ":" + baseport
 rabbitmqHost = "localhost"
 rabbitmqPort = 8200
 
-def test_webhook(endpoint):
+def test_webhook(endpoint, token):
     url = baseurl + endpoint
 
     # data = {
@@ -14,10 +14,12 @@ def test_webhook(endpoint):
     #     "eventId": event_id,
     #     "ticketId": ticket_id
     # }
-    # headers = {'Content-Type': 'application/json'}
+    headers = {
+        'Content-Type': 'application/json',
+        'API-Key': token
+        }
 
-    # response = requests.post(url, json=data, headers=headers)
-    response = requests.post(url)
+    response = requests.post(url, headers=headers)
     return response
 
 def register():
@@ -64,7 +66,7 @@ def get():
 if __name__ == "__main__":
     # response = register()
     # response = registerEndpoint("payment", "/euy2", "b0704a8f-ce53-4606-9f6e-0cb40f62dbb6")
-    response = test_webhook("/webhook/payment")
+    response = test_webhook("/webhook/payment", "4deed586-5227-4598-b2de-2a4c09094f7d")
     # response = book(1, 1, 1)
 
     print("\nstatus code:", response.status_code)

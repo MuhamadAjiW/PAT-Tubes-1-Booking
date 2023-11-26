@@ -31,6 +31,13 @@ export class WebhookRepository{
         return
     }
 
+    async getWebhookAll(){
+        const result = await PostgresConnection.query(
+            'SELECT * FROM webhook'
+        )
+        return result.rows;
+    }
+
     async getWebhookById(webhook_id: number){
         const result = await PostgresConnection.query(
             'SELECT * FROM webhook WHERE webhook_id = $1',
@@ -48,7 +55,7 @@ export class WebhookRepository{
 
     async getWebhookByClintAndEndpoint(client_id: number, endpoint: string){
         const result = await PostgresConnection.query(
-            'SELECT * FROM webhook WHERE webhook_id = $1 and endpoint = $2',
+            'SELECT * FROM webhook WHERE client_id = $1 and endpoint = $2',
             [client_id, endpoint]
         )
         return result.rows[0];
