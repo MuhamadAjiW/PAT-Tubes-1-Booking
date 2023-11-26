@@ -106,6 +106,78 @@ export class WebhookController{
         }
     }
 
+    private registerBaseWebhook(endpoint: string){
+        this.app.server.post( "/webhook" + endpoint,
+            async (newreq: Request, newres: Response) => {
+                console.log("Webhook base received a call")
+                let webhookToken = newreq.get("API-Key");
+                if(!webhookToken){
+                    newres.status(StatusCodes.UNAUTHORIZED).json({
+                        message: "No token provided",
+                        valid: false,
+                    }).send();
+                    return;
+                }
+                if(!newreq.ip){
+                    newres.status(StatusCodes.BAD_REQUEST).json({
+                        message: "Undefined ip",
+                        valid: false,
+                    }).send();
+                    return;
+                }
+                
+                let client: WebhookClient = await this.webhookRepository.getWebhookClientByIp(newreq.ip);
+                if(!client){
+                    newres.status(StatusCodes.UNAUTHORIZED).json({
+                        message: "Unregistered client",
+                        valid: false,
+                    }).send();
+                    return;
+                }
+
+                const serverUrl = `${newreq.protocol}://${newreq.get('host')}`;
+                const forwardEndpoint = "/webhook/" + client.client_id + endpoint;
+                const forwardUrl = serverUrl + forwardEndpoint;
+                const axiosResponse = await axios.post(forwardUrl, newreq.body, { headers: newreq.headers });
+
+                newres.status(axiosResponse.status).send(axiosResponse.data);
+                return;
+            }
+        );
+    }
+
+    private async registerMainWebhook(webhook: WebhookCoreData, client: WebhookClient, handler: CallableFunction){        
+        this.app.server.post( "/webhook/" + client.client_id + webhook.endpoint,
+            async (newreq: Request, newres: Response) => {
+                console.log("Webhook main received a call")
+                let webhookToken = newreq.get("API-Key");
+                if(!webhookToken){
+                    newres.status(StatusCodes.UNAUTHORIZED).json({
+                        message: "No token provided",
+                        valid: false,
+                    }).send();
+                    return;
+                }
+                if(webhookToken != client.token){
+                    newres.status(StatusCodes.UNAUTHORIZED).json({
+                        message: "Invalid token",
+                        valid: false,
+                    }).send();
+                    return;
+                }
+
+                newres.status(StatusCodes.OK).json({
+                    message: webhook.event_name + " webhook triggered",
+                    valid: true,
+                    data: null
+                }).send();
+
+                await handler(newreq, newres);
+                return;
+            }
+        );
+    }
+
     private async refreshWebhooks(){
         console.log("Refreshing webhooks")
 
@@ -122,77 +194,6 @@ export class WebhookController{
         }
 
         console.log("Webhook refreshed")
-    }
-
-    private registerBaseWebhook(endpoint: string){
-        this.app.server.post( "/webhook" + endpoint,
-        async (newreq: Request, newres: Response) => {
-            console.log("Webhook base received a call")
-            let webhookToken = newreq.get("API-Key");
-            if(!webhookToken){
-                newres.status(StatusCodes.UNAUTHORIZED).json({
-                    message: "No token provided",
-                    valid: false,
-                }).send();
-                return;
-            }
-            if(!newreq.ip){
-                newres.status(StatusCodes.BAD_REQUEST).json({
-                    message: "Undefined ip",
-                    valid: false,
-                }).send();
-                return;
-            }
-            
-            let client: WebhookClient = await this.webhookRepository.getWebhookClientByIp(newreq.ip);
-            if(!client){
-                newres.status(StatusCodes.UNAUTHORIZED).json({
-                    message: "Unregistered client",
-                    valid: false,
-                }).send();
-                return;
-            }
-
-            const serverUrl = `${newreq.protocol}://${newreq.get('host')}`;
-            const forwardEndpoint = "/webhook/" + client.client_id + endpoint;
-            const forwardUrl = serverUrl + forwardEndpoint;
-            const axiosResponse = await axios.post(forwardUrl, newreq.body, { headers: newreq.headers });
-
-            newres.status(axiosResponse.status).send(axiosResponse.data);
-            return;
-    });
-    }
-
-    private async registerMainWebhook(webhook: WebhookCoreData, client: WebhookClient, handler: CallableFunction){        
-        this.app.server.post( "/webhook/" + client.client_id + webhook.endpoint,
-        // TODO: Implement events
-        async (newreq: Request, newres: Response) => {
-            console.log("Webhook main received a call")
-            let webhookToken = newreq.get("API-Key");
-            if(!webhookToken){
-                newres.status(StatusCodes.UNAUTHORIZED).json({
-                    message: "No token provided",
-                    valid: false,
-                }).send();
-                return;
-            }
-            if(webhookToken != client.token){
-                newres.status(StatusCodes.UNAUTHORIZED).json({
-                    message: "Invalid token",
-                    valid: false,
-                }).send();
-                return;
-            }
-
-            newres.status(StatusCodes.OK).json({
-                message: webhook.event_name + " webhook triggered",
-                valid: true,
-                data: null
-            }).send();
-
-            await handler(newreq, newres);
-            return;
-        });
     }
 
     private getHandler(event_name: string): CallableFunction{
