@@ -10,12 +10,17 @@ import { z } from 'zod';
 import { SignatureUtil } from '../utils/signature-utils';
 import { UnauthorizedError } from '../types/errors/UnauthorizedError';
 import { NotFoundError } from '../types/errors/NotFoundError';
+import { PDFUtils } from '../utils/pdf-utils';
+import { AcaraRepository } from '../repository/acara-repository';
+import { AcaraInfo } from '../types/AcaraInfo';
 
 export class BookingController{
     bookingRepository: BookingRepository;
+    acaraRepository: AcaraRepository;
 
     constructor(){
         this.bookingRepository = new BookingRepository();
+        this.acaraRepository = new AcaraRepository();
     }
 
     book(){
@@ -28,14 +33,20 @@ export class BookingController{
             }
 
             if(FailureSimulator.simulate()){
-                // TODO: Send failed pdf
+                console.log("Simulating failure in ticketing server...")
+                const acaraInfo: AcaraInfo = await this.acaraRepository.getAcaraById(kursiBookRequest.acaraId)
 
+                const filename: string = await PDFUtils.generateBookingFailed({
+                    email: kursiBookRequest.email,
+                    namaAcara: acaraInfo.nama_acara,
+                    invoiceNumber: "-",
+                    bookingId: 0,
+                    kursiId: kursiBookRequest.kursiId,
+                    failureReason: "Failure in ticket before sending request to payment server"
+                })
+                const filePath = SERVER_FILE_FOLDER + filename;
 
-                res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                    message: "Booking unsuccessful",
-                    valid: false,
-                    data: null
-                });
+                res.status(StatusCodes.INTERNAL_SERVER_ERROR).sendFile(filePath);
             }
             else{
                 // TODO: Validate request
