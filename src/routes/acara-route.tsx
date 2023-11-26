@@ -12,6 +12,15 @@ export class AcaraRoute implements Route{
     getRoutes(): Router {
         return Router()
             .get("/api/acara",
-                this.AcaraController.getDistinctAcaraId());
+                this.AcaraController.getDistinctAcaraId())
+                
+            .post("/api/acara",
+                this.AcaraController.createAcara())
+            .get("/api/acara/:identifier",
+                this.AcaraController.getAcaraById())
+            .put("/api/acara/:identifier",
+                this.AcaraController.updateAcaraById())
+            .delete("/api/acara/:identifier",
+                this.AcaraController.deleteAcaraById());
     }
 }

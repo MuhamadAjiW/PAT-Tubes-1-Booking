@@ -12,6 +12,15 @@ export class KursiRoute implements Route{
     getRoutes(): Router {
         return Router()
             .get("/api/kursi", 
-                this.KursiController.getDistinctKursiId());
+                this.KursiController.getDistinctKursiId())
+
+            .post("/api/acara/:acaraId/kursi",
+                this.KursiController.createKursi())
+            .get("/api/acara/:acaraId/kursi/:kursiId",
+                this.KursiController.getKursiById())
+            .put("/api/acara/:acaraId/kursi/:kursiId",
+                this.KursiController.updateKursiById())
+            .delete("/api/acara/:acaraId/kursi/:kursiId",
+                this.KursiController.deleteKursiById());
     }
 }

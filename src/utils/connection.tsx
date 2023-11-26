@@ -4,6 +4,7 @@ import { Pool } from 'pg';
 import amqp from 'amqplib';
 import { PG_HOST, PG_NAME, PG_PASS, PG_PORT, PG_USER, RABBITMQ_URL } from './config';
 
+// Ini harusnya autocommit by default
 export const PostgresConnection = new Pool({
   user: PG_USER,
   host: PG_HOST,

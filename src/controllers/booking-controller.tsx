@@ -13,6 +13,8 @@ import { NotFoundError } from '../types/errors/NotFoundError';
 import { PDFUtils } from '../utils/pdf-utils';
 import { AcaraRepository } from '../repository/acara-repository';
 import { AcaraInfo } from '../types/AcaraInfo';
+import { BookingQuery } from '../types/BookingQuery';
+import { ConflictError } from '../types/errors/ConflictError';
 
 export class BookingController{
     bookingRepository: BookingRepository;
@@ -49,13 +51,13 @@ export class BookingController{
                 res.status(StatusCodes.INTERNAL_SERVER_ERROR).sendFile(filePath);
             }
             else{
-                // TODO: Validate request
+                const existing = await this.bookingRepository.getStatusByAcaraIdAndKursiId(kursiBookRequest.acaraId, kursiBookRequest.kursiId);
+                if(existing) throw new ConflictError("Ticket has already been booked");
+
                 console.log("Booking request received");
                 const data = await this.bookingRepository.insert(kursiBookRequest);
 
                 const paymentData = await PaymentController.requestPayment(kursiBookRequest);
-
-                // TODO: Forward to client
 
                 res.status(StatusCodes.OK).json({
                     message: "Booking ongoing",
@@ -63,6 +65,41 @@ export class BookingController{
                     data: paymentData
                 });
             }
+        }
+    }
+
+    getBookingStatusByBookingId(){
+        return async (req: Request, res: Response) => {
+            const queryId = z.number().int().safeParse(req.params.identifier)
+            if(!queryId.success) throw new BadRequestError(queryId.error.message);
+            const bookingId: number = queryId.data;
+
+            const result = await this.bookingRepository.getStatusById(bookingId);
+            if(!result) throw new NotFoundError("Booking request not found");
+
+            res.status(StatusCodes.OK).json({
+                message: "Booking request status successfully fetched",
+                valid: true,
+                data: result.status
+            })
+        }
+    }
+
+
+    getBookingStatusByAcaraIdAndKursiId(){
+        return async (req: Request, res: Response) => {
+            const queryParam = BookingQuery.safeParse(req.query)
+            if(!queryParam.success) throw new BadRequestError(queryParam.error.message);
+            const bookingQuery: BookingQuery = queryParam.data;
+
+            const result = await this.bookingRepository.getStatusByAcaraIdAndKursiId(bookingQuery.acaraId, bookingQuery.kursiId);
+            if(!result) throw new NotFoundError("Booking request not found");
+
+            res.status(StatusCodes.OK).json({
+                message: "Booking request status successfully fetched",
+                valid: true,
+                data: result.status
+            })
         }
     }
 

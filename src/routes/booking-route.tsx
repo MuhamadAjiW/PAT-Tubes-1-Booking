@@ -13,7 +13,14 @@ export class BookingRoute implements Route{
         return Router()
             .post("/api/book",
                 this.BookingController.book())
-            .get("/api/book",
+
+            // _TODO: implement general CRUD functionality
+            
+            .get("/api/book/:identifier/status",
+                this.BookingController.getBookingStatusByBookingId())
+            .get("/api/book/status",
+                this.BookingController.getBookingStatusByAcaraIdAndKursiId())
+            .get("/api/book/file",
                 this.BookingController.getBookingPDF());
     }
 }
