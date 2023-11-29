@@ -5,7 +5,7 @@ import { BookingRequest } from '../types/BookingRequest';
 import { BookingRepository } from '../repository/booking-repository';
 import { FailureSimulator } from '../utils/failure-simulator';
 import { PaymentController } from './payment-controller';
-import { SERVER_FILE_FOLDER } from '../utils/config';
+import { PAYMENT_SERVER_PUBLIC_URL, SERVER_FILE_FOLDER } from '../utils/config';
 import { z } from 'zod';
 import { SignatureUtil } from '../utils/signature-utils';
 import { UnauthorizedError } from '../types/errors/UnauthorizedError';
@@ -77,6 +77,7 @@ export class BookingController{
 
                 // TODO: Test
                 const paymentData = await PaymentController.requestPayment(invoiceRequest);
+                paymentData.data.url = PAYMENT_SERVER_PUBLIC_URL + paymentData.data.url
 
                 res.status(StatusCodes.OK).json({
                     message: "Booking ongoing",
