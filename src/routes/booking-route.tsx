@@ -3,24 +3,24 @@ import { Route } from "../types/interfaces/route";
 import { BookingController } from "../controllers/booking-controller";
 
 export class BookingRoute implements Route{
-    BookingController: BookingController;
+    bookingController: BookingController;
 
     constructor() {
-        this.BookingController = new BookingController();
+        this.bookingController = new BookingController();
     }
 
     getRoutes(): Router {
         return Router()
             .post("/api/book",
-                this.BookingController.book())
+                this.bookingController.book())
 
             // _TODO: implement general CRUD functionality
             
             .get("/api/book/:identifier/status",
-                this.BookingController.getBookingStatusByBookingId())
+                this.bookingController.getBookingStatusByBookingId())
             .get("/api/book/status",
-                this.BookingController.getBookingStatusByAcaraIdAndKursiId())
+                this.bookingController.getBookingStatusByAcaraIdAndKursiId())
             .get("/api/book/file",
-                this.BookingController.getBookingPDF());
+                this.bookingController.getBookingPDF());
     }
 }

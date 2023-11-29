@@ -3,28 +3,28 @@ import { Route } from "../types/interfaces/route";
 import { AcaraController } from "../controllers/acara-controller";
 
 export class AcaraRoute implements Route{
-    AcaraController: AcaraController;
+    acaraController: AcaraController;
 
     constructor() {
-        this.AcaraController = new AcaraController();
+        this.acaraController = new AcaraController();
     }
 
     getRoutes(): Router {
         return Router()
             .get("/api/acara",
-                this.AcaraController.getDistinctAcaraId())
+                this.acaraController.getDistinctAcaraId())
 
             // TODO: Test
             .post("/api/acara",
-                this.AcaraController.createAcara())
+                this.acaraController.createAcara())
             // TODO: Test
             .get("/api/acara/:identifier",
-                this.AcaraController.getAcaraById())
+                this.acaraController.getAcaraById())
             // TODO: Test
             .put("/api/acara/:identifier",
-                this.AcaraController.updateAcaraById())
+                this.acaraController.updateAcaraById())
             // TODO: Test
             .delete("/api/acara/:identifier",
-                this.AcaraController.deleteAcaraById());
+                this.acaraController.deleteAcaraById());
     }
 }

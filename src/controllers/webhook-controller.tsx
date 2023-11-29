@@ -79,7 +79,7 @@ export class WebhookController{
             const registered = await this.webhookRepository.getWebhookClientByIp(req.ip);
             if(!registered) throw new UnauthorizedError("ip address not registered");
             if(token != registered.token) throw new UnauthorizedError("Bad token");
-
+            
             const registeredEndpoint = await this.webhookRepository.getWebhookByClintAndEndpoint(registered.client_id, webhookRegisterRequest.endpoint);
 
             if(registeredEndpoint) throw new ConflictError("This endpoint has already been registered");

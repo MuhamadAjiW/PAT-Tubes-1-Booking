@@ -3,28 +3,28 @@ import { Route } from "../types/interfaces/route";
 import { KursiController } from "../controllers/kursi-controller";
 
 export class KursiRoute implements Route{
-    KursiController: KursiController;
+    kursiController: KursiController;
 
     constructor() {
-        this.KursiController = new KursiController();
+        this.kursiController = new KursiController();
     }
 
     getRoutes(): Router {
         return Router()
             .get("/api/kursi", 
-                this.KursiController.getDistinctKursiId())
+                this.kursiController.getDistinctKursiId())
 
             // TODO: Test
             .post("/api/acara/:acaraId/kursi",
-                this.KursiController.createKursi())
+                this.kursiController.createKursi())
             // TODO: Test
             .get("/api/acara/:acaraId/kursi/:kursiId",
-                this.KursiController.getKursiById())
+                this.kursiController.getKursiById())
             // TODO: Test
             .put("/api/acara/:acaraId/kursi/:kursiId",
-                this.KursiController.updateKursiById())
+                this.kursiController.updateKursiById())
             // TODO: Test
             .delete("/api/acara/:acaraId/kursi/:kursiId",
-                this.KursiController.deleteKursiById());
+                this.kursiController.deleteKursiById());
     }
 }
