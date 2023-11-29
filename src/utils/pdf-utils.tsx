@@ -9,7 +9,6 @@ import { SignatureUtil } from './signature-utils';
 export class PDFUtils{
     public static async generateBookingSuccess(info: BookingInfo): Promise<string>{
         const doc = new PDFDocument()
-        console.log(SERVER_FILE_FOLDER);
 
         const filename: string = info.email + "-" + info.namaAcara + "-" + moment().format(SignatureUtil.dateFormat) + ".pdf";
 

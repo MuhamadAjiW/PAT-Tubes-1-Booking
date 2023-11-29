@@ -6,8 +6,8 @@ export const Invoice = z.object({
     invoiceNumber: z.string(),
     request: InvoiceRequest,
     timestamp: z.date(),
-    status: z.string().refine(value => ["", "SUCCESS", "PENDING", "FAILED"].includes(value), {
-        message: "Status must be one of 'OPEN', 'ON GOING', 'BOOKED'",
+    status: z.string().refine(value => ["ERROR", "DONE", "PENDING", "FAILED"].includes(value), {
+        message: "Status must be one of 'DONE', 'PENDING', 'FAILED'",
     }),
 });
 export type Invoice = z.infer<typeof Invoice>

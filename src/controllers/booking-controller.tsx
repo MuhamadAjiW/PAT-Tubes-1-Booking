@@ -50,7 +50,6 @@ export class BookingController{
                     kursiId: kursiBookRequest.kursiId,
                     failureReason: "Failure in ticket before sending request to payment server"
                 })
-                const filePath = SERVER_FILE_FOLDER + filename;
                 const signature = SignatureUtil.generateSignature(filename, SignatureUtil.PDFExpiry);
 
                 res.status(StatusCodes.OK).json({
@@ -76,7 +75,7 @@ export class BookingController{
     
                 // TODO: Test
                 const paymentData = await PaymentController.requestPayment(invoiceRequest);
-                paymentData.data.url = PAYMENT_SERVER_PUBLIC_URL + paymentData.data.url
+                paymentData.data.url = paymentData.data.url
     
                 res.status(StatusCodes.OK).json({
                     message: "Booking ongoing",
@@ -148,6 +147,7 @@ export class BookingController{
             res.setHeader('Content-Disposition', `inline; filename="booking.pdf"`);
 
             console.log("Booking pdf sent")
+            console.log(filePath)
             res.sendFile(filePath);
         }
     }
