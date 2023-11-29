@@ -55,7 +55,7 @@ export class BookingRepository{
 
     async getStatusById(booking_id: number){
         const result = await PostgresConnection.query(
-            'SELECT status FROM booking WHERE booking_id = $1 RETURNING status',
+            'SELECT status FROM booking WHERE booking_id = $1',
             [booking_id]
         );
         return result.rows[0];
@@ -63,7 +63,7 @@ export class BookingRepository{
 
     async getStatusByAcaraIdAndKursiId(acaraId: number, kursiId: number){
         const result = await PostgresConnection.query(
-            'SELECT status FROM booking WHERE acara_id = $1 AND kursi_id = $2 RETURNING status',
+            'SELECT status FROM booking WHERE acara_id = $1 AND kursi_id = $2',
             [acaraId, kursiId]
         );
         return result.rows[0];

@@ -1,10 +1,7 @@
-import { QueuePublisher, QueueListener } from "../interfaces/RabbitMQ";
+import { QueueListener } from "../interfaces/RabbitMQ";
 import { RabbitMQConnection } from "../../utils/connection";
 
 export class RabbitMQConnectionFactory{
-    static listeners: Array<QueuePublisher>;
-    static publishers: Array<QueuePublisher>;
-
     static async addListener(
         exchangeName: String,
         queueName: String,

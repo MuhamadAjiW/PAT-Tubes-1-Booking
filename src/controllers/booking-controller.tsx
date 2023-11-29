@@ -48,8 +48,18 @@ export class BookingController{
                     failureReason: "Failure in ticket before sending request to payment server"
                 })
                 const filePath = SERVER_FILE_FOLDER + filename;
+                const signature = SignatureUtil.generateSignature(filename, SignatureUtil.PDFExpiry);
 
-                res.status(StatusCodes.INTERNAL_SERVER_ERROR).sendFile(filePath);
+                res.status(StatusCodes.OK).json({
+                    message: "Server encountered an error",
+                    valid: false,
+                    data: {
+                        signature: signature,
+                        invoiceNumber: "-",
+                        bookingId: 0,
+                        failureReason: "Failure in ticket before sending request to payment server"
+                    }
+                });
             }
             else{
                 const existing = await this.bookingRepository.getStatusByAcaraIdAndKursiId(kursiBookRequest.acaraId, kursiBookRequest.kursiId);
@@ -72,7 +82,7 @@ export class BookingController{
                     message: "Booking ongoing",
                     valid: true,
                     data: paymentData
-                });
+                }).send();
             }
         }
     }
@@ -90,7 +100,7 @@ export class BookingController{
                 message: "Booking request status successfully fetched",
                 valid: true,
                 data: result.status
-            })
+            }).send();
         }
     }
 
@@ -108,7 +118,7 @@ export class BookingController{
                 message: "Booking request status successfully fetched",
                 valid: true,
                 data: result.status
-            })
+            }).send();
         }
     }
 

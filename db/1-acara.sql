@@ -7,4 +7,11 @@ CREATE TABLE IF NOT EXISTS acara (
 INSERT INTO acara (nama_acara) VALUES
   ('Event A'),
   ('Event B'),
-  ('Event C');
+  ('Event C'),
+  ('Event D'),
+  ('Event E'),
+  ('Event F'),
+  ('Event G'),
+  ('Event H'),
+  ('Event I'),
+  ('Event J');
