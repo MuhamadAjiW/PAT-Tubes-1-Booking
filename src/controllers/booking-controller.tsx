@@ -35,6 +35,9 @@ export class BookingController{
                 throw new BadRequestError("Bad request parameters");
             }
 
+            const existing = await this.bookingRepository.getStatusByAcaraIdAndKursiId(kursiBookRequest.acaraId, kursiBookRequest.kursiId);
+            if(existing) throw new ConflictError("Ticket has already been booked");
+
             if(FailureSimulator.simulate()){
                 console.log("Simulating failure in ticketing server...")
                 const acaraInfo: AcaraInfo = await this.acaraRepository.getAcaraById(kursiBookRequest.acaraId)
@@ -60,11 +63,7 @@ export class BookingController{
                         failureReason: "Failure in ticket before sending request to payment server"
                     }
                 });
-            }
-            else{
-                const existing = await this.bookingRepository.getStatusByAcaraIdAndKursiId(kursiBookRequest.acaraId, kursiBookRequest.kursiId);
-                if(existing) throw new ConflictError("Ticket has already been booked");
-
+            } else{
                 console.log("Booking request received");
                 const data = await this.bookingRepository.insert(kursiBookRequest);
                 const invoiceRequest: InvoiceRequest = ({
@@ -74,17 +73,18 @@ export class BookingController{
                     userId: kursiBookRequest.kursiId,
                     bookingId: data.bookingId
                 })
-
+    
                 // TODO: Test
                 const paymentData = await PaymentController.requestPayment(invoiceRequest);
                 paymentData.data.url = PAYMENT_SERVER_PUBLIC_URL + paymentData.data.url
-
+    
                 res.status(StatusCodes.OK).json({
                     message: "Booking ongoing",
                     valid: true,
                     data: paymentData
                 }).send();
             }
+
         }
     }
 
